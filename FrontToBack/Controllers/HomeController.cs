@@ -1,5 +1,6 @@
 ﻿using FrontToBack.DAL;
 using FrontToBack.Models;
+using FrontToBack.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +17,15 @@ namespace FrontToBack.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = _context.Products.ToList();
+            List<Product> products = _context.Products.Include(p=>p.ProductImages).OrderByDescending(p => p.Order).Take(11).ToList();
+            List<NewProduct> newProducts = _context.NewProducts.Include(p => p.ProductImages).ToList();
 
-            return View(products.OrderByDescending(p=>p.Order).Take(8).ToList());
+            HomeVM vm = new HomeVM
+            {
+                Products = products,
+                NewProducts = newProducts
+            };
+            return View(vm);
         }
 
         public IActionResult About()
